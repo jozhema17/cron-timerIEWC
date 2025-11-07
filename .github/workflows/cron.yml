@@ -1,14 +1,19 @@
-name: Ejecutar cron cada 5 minutos
+<?php
+// Al principio de process2.php
+$lockFile = __DIR__ . '/timerIEWC.lock';
+$lock = fopen($lockFile, 'c+');           // crea/abre
+if (!$lock) {
+    // si no se puede abrir el candado, sal
+    exit("No se pudo abrir lock.\n");
+}
+if (!flock($lock, LOCK_EX | LOCK_NB)) {   // intenta lock exclusivo no-bloqueante
+    // ya hay una instancia corriendo
+    exit("Ya en ejecución.\n");
+}
 
-on:
-  schedule:
-    - cron: "*/5 * * * *"
-  workflow_dispatch:
-
-jobs:
-  ejecutar:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Llamar URL timerIEWC
-        run: |
-          curl -s https://iewccfdi.facturacionelectronica.mx/timerIEWC.php
+// libera el lock al terminar, pase lo que pase
+register_shutdown_function(function() use ($lock, $lockFile) {
+    flock($lock, LOCK_UN);
+    fclose($lock);
+    @unlink($lockFile); // opcional: si prefieres dejarlo, quita esta línea
+});
