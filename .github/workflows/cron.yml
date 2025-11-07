@@ -15,5 +15,4 @@ if (!flock($lock, LOCK_EX | LOCK_NB)) {   // intenta lock exclusivo no-bloqueant
 register_shutdown_function(function() use ($lock, $lockFile) {
     flock($lock, LOCK_UN);
     fclose($lock);
-    @unlink($lockFile); // opcional: si prefieres dejarlo, quita esta línea
 });
