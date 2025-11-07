@@ -2,7 +2,7 @@ name: Ejecutar cron cada 5 minutos
 
 on:
   schedule:
-    - cron: "*/3 * * * *"
+    - cron: "*/5 * * * *"
   workflow_dispatch:
 
 # Garantiza que NUNCA haya dos ejecuciones simultáneas de este workflow
